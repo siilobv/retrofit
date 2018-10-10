@@ -17,7 +17,9 @@ package retrofit2;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import javax.annotation.Nullable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
@@ -47,8 +49,8 @@ public interface Converter<F, T> {
      * response types such as {@code SimpleResponse} from a {@code Call<SimpleResponse>}
      * declaration.
      */
-    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
-        Retrofit retrofit) {
+    public @Nullable Converter<ResponseBody, ?> responseBodyConverter(Type type,
+        Annotation[] annotations, Retrofit retrofit) {
       return null;
     }
 
@@ -58,7 +60,7 @@ public interface Converter<F, T> {
      * specified by {@link Body @Body}, {@link Part @Part}, and {@link PartMap @PartMap}
      * values.
      */
-    public Converter<?, RequestBody> requestBodyConverter(Type type,
+    public @Nullable Converter<?, RequestBody> requestBodyConverter(Type type,
         Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
       return null;
     }
@@ -70,9 +72,25 @@ public interface Converter<F, T> {
      * {@link Header @Header}, {@link HeaderMap @HeaderMap}, {@link Path @Path},
      * {@link Query @Query}, and {@link QueryMap @QueryMap} values.
      */
-    public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
+    public @Nullable Converter<?, String> stringConverter(Type type, Annotation[] annotations,
         Retrofit retrofit) {
       return null;
+    }
+
+    /**
+     * Extract the upper bound of the generic parameter at {@code index} from {@code type}. For
+     * example, index 1 of {@code Map<String, ? extends Runnable>} returns {@code Runnable}.
+     */
+    protected static Type getParameterUpperBound(int index, ParameterizedType type) {
+      return Utils.getParameterUpperBound(index, type);
+    }
+
+    /**
+     * Extract the raw class type from {@code type}. For example, the type representing
+     * {@code List<? extends Runnable>} returns {@code List.class}.
+     */
+    protected static Class<?> getRawType(Type type) {
+      return Utils.getRawType(type);
     }
   }
 }

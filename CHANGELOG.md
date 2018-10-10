@@ -1,6 +1,49 @@
 Change Log
 ==========
 
+Version 2.4.0 *(2018-03-14)*
+----------------------------
+
+ * New: `Retrofit.Builder` exposes mutable lists of the added converter and call adapter factories.
+ * New: Call adapter added for Scala's `Future`.
+ * New: Converter for JAXB replaces the now-deprecated converter for Simple XML Framework.
+ * New: Add Java 9 automatic module names for each artifact corresponding to their root package.
+ * Fix: Do not swallow `Error`s from callbacks (usually `OutOfMemoryException`).
+ * Fix: Moshi and Gson converters now assert that the full response was consumed. This prevents
+   hiding bugs in faulty adapters which might not have consumed the full JSON input which would
+   then cause failures on the next request over that connection.
+ * Fix: Do not conflate OkHttp `Call` cancelation with RxJava unsubscription/disposal. Prior to
+   this change, canceling of a `Call` would prevent a cancelation exception from propagating down
+   the Rx stream.
+
+
+Version 2.3.0 *(2017-05-13)*
+----------------------------
+
+ *  **Retrofit now uses `@Nullable` to annotate all possibly-null values.** We've
+    added a compile-time dependency on the JSR 305 annotations. This is a
+    [provided][maven_provided] dependency and does not need to be included in
+    your build configuration, `.jar` file, or `.apk`. We use
+    `@ParametersAreNonnullByDefault` and all parameters and return types are
+    never null unless explicitly annotated `@Nullable`.
+
+    **Warning: this release is source-incompatible for Kotlin users.**
+    Nullability was previously ambiguous and lenient but now the compiler will
+    enforce strict null checks.
+
+ * New: Converters added for Java 8's and Guava's `Optional` which wrap a potentially-nullable
+   response body. These converters still rely on normal serialization library converters for parsing
+   the response bytes into an object.
+ * New: String converters that return `null` for an `@Query` or `@Field` parameter are now skipped.
+ * New: The mock module's `NetworkBehavior` now throws a custom subclass of `IOException` to more
+   clearly indicate the exception's source.
+ * RxJava 1.x converter updated to 1.3.0 which stabilizes the use of `Completable`.
+ * Fix: Add explicit handling for `OnCompleteFailedException`, `OnErrorFailedException`, and
+   `OnErrorNotImplementedException` for RxJava 1.x to ensure they're correct delivered to the
+   plugins/hooks for handling.
+ * Fix: `NoSuchElementException` thrown when unsubscribing from an RxJava 1.x `Single`.
+
+
 Version 2.2.0 *(2017-02-21)*
 ----------------------------
 
@@ -340,7 +383,7 @@ Version 1.5.0 *(2014-03-20)*
  * Fix: Support empty HTTP response status reason.
  * If an `ErrorHandler` is supplied it will be invoked for `Callback` and `Observable` methods.
  * HTTP `PATCH` method using `HttpUrlConnection` is no longer supported. Add the
-   [OkHttp](http://square.github.io/okhttp) jar to your project if you need this behavior.
+   [OkHttp](https://square.github.io/okhttp) jar to your project if you need this behavior.
  * Custom `Client` implementations should no longer set `Content-Type` or `Content-Length` headers
    based on the `TypedInput` body of the `Request`. These headers will now be added automatically
    as part of the standard `Request` header list.
@@ -393,7 +436,7 @@ Version 1.2.2 *(2013-09-12)*
 Version 1.2.1 *(2013-08-30)*
 ----------------------------
 
- * New: Converter for [Wire protocol buffers](http://github.com/square/wire)!
+ * New: Converter for [Wire protocol buffers](https://github.com/square/wire)!
 
 
 Version 1.2.0 *(2013-08-23)*
@@ -455,3 +498,6 @@ Version 1.0.0 *(2013-05-13)*
 ----------------------------
 
 Initial release.
+
+
+ [maven_provided]: https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html

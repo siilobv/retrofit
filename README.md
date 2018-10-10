@@ -14,18 +14,35 @@ Download [the latest JAR][2] or grab via Maven:
 <dependency>
   <groupId>com.squareup.retrofit2</groupId>
   <artifactId>retrofit</artifactId>
-  <version>2.2.0</version>
+  <version>2.4.0</version>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.squareup.retrofit2:retrofit:2.2.0'
+implementation 'com.squareup.retrofit2:retrofit:2.4.0'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository][snap].
 
 Retrofit requires at minimum Java 7 or Android 2.3.
 
+
+ProGuard
+--------
+
+If you are using ProGuard you need to add the following options:
+```
+# Retain generic type information for use by reflection by converters and adapters.
+-keepattributes Signature
+# Retain service method parameters.
+-keepclassmembernames,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+# Ignore annotation used for build tooling.
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+```
+
+You might also need rules for OkHttp and Okio which are dependencies.
 
 
 License
@@ -46,6 +63,6 @@ License
     limitations under the License.
 
 
- [1]: http://square.github.io/retrofit/
+ [1]: https://square.github.io/retrofit/
  [2]: https://search.maven.org/remote_content?g=com.squareup.retrofit2&a=retrofit&v=LATEST
  [snap]: https://oss.sonatype.org/content/repositories/snapshots/

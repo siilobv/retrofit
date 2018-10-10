@@ -29,7 +29,10 @@ import retrofit2.Retrofit;
  * <p>
  * This converter only applies for class types. Parameterized types (e.g., {@code List<Foo>}) are
  * not handled.
+ *
+ * @deprecated we recommend switching to the JAXB converter.
  */
+@Deprecated
 public final class SimpleXmlConverterFactory extends Converter.Factory {
   /** Create an instance using a default {@link Persister} instance for conversion. */
   public static SimpleXmlConverterFactory create() {
@@ -47,7 +50,9 @@ public final class SimpleXmlConverterFactory extends Converter.Factory {
   }
 
   /** Create an instance using {@code serializer} for non-strict conversion. */
+  @SuppressWarnings("ConstantConditions") // Guarding public API nullability.
   public static SimpleXmlConverterFactory createNonStrict(Serializer serializer) {
+    if (serializer == null) throw new NullPointerException("serializer == null");
     return new SimpleXmlConverterFactory(serializer, false);
   }
 
@@ -55,7 +60,6 @@ public final class SimpleXmlConverterFactory extends Converter.Factory {
   private final boolean strict;
 
   private SimpleXmlConverterFactory(Serializer serializer, boolean strict) {
-    if (serializer == null) throw new NullPointerException("serializer == null");
     this.serializer = serializer;
     this.strict = strict;
   }

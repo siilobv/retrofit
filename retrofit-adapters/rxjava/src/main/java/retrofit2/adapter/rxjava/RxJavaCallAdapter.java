@@ -16,6 +16,7 @@
 package retrofit2.adapter.rxjava;
 
 import java.lang.reflect.Type;
+import javax.annotation.Nullable;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Response;
@@ -25,15 +26,15 @@ import rx.Scheduler;
 
 final class RxJavaCallAdapter<R> implements CallAdapter<R, Object> {
   private final Type responseType;
-  private final Scheduler scheduler;
+  private final @Nullable Scheduler scheduler;
   private final boolean isAsync;
   private final boolean isResult;
   private final boolean isBody;
   private final boolean isSingle;
   private final boolean isCompletable;
 
-  RxJavaCallAdapter(Type responseType, Scheduler scheduler, boolean isAsync, boolean isResult,
-      boolean isBody, boolean isSingle, boolean isCompletable) {
+  RxJavaCallAdapter(Type responseType, @Nullable Scheduler scheduler, boolean isAsync,
+      boolean isResult, boolean isBody, boolean isSingle, boolean isCompletable) {
     this.responseType = responseType;
     this.scheduler = scheduler;
     this.isAsync = isAsync;
@@ -70,18 +71,8 @@ final class RxJavaCallAdapter<R> implements CallAdapter<R, Object> {
       return observable.toSingle();
     }
     if (isCompletable) {
-      return CompletableHelper.toCompletable(observable);
-    }
-    return observable;
-  }
-
-  /**
-   * Separate static class defers classloading and bytecode verification since Completable is not an
-   * RxJava stable API yet.
-   */
-  private static final class CompletableHelper {
-    static Object toCompletable(Observable<?> observable) {
       return observable.toCompletable();
     }
+    return observable;
   }
 }
